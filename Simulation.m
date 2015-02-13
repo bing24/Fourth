@@ -328,8 +328,8 @@ classdef Simulation < handle
             switch nargin
                 case 1
                     % close all
-                    x=120;
-                    axis([-x x -x x]);
+                    % x=120;
+                    axis([-0 27 -6 21]);
                     obj.FigHandle=figure(1);
                     axis equal
                     set(obj.FigHandle, 'Position', [100, 100, 1049, 895]);
@@ -354,7 +354,7 @@ classdef Simulation < handle
                     for i=1:length(obj.list_of_charging_robots);
                          obj.list_of_charging_robots(i).plot(time);
                     end
-                    if (isempty (find(time==[1 0:20:200])));
+                    if (isempty (find(time==[1 0:obj.simulation_time/10:obj.simulation_time])));
                         time;
                     else
                         
@@ -381,7 +381,7 @@ classdef Simulation < handle
                     i
                     obj.plot(i);
                     drawnow;
-                    pause(.01);
+                    pause(.02);
                 end
             case 2
                 if (any(strcmp(record,{'Record','record','Rec','rec'})))
@@ -390,11 +390,11 @@ classdef Simulation < handle
                     cstr=strcat(mat2str(c),'.avi');
                     SimulationVideo = VideoWriter(cstr);
                     open(SimulationVideo);
-                    figure()
+                    
                     set(gca,'nextplot','replacechildren');
                     set(gcf,'Renderer','zbuffer');
                     obj.plot();
-                    axis([-120,120,-120,120])
+                    axis([-0 27 -6 21]);
                     for i=1:obj.simulation_time
                         obj.plot(i);
                         drawnow;

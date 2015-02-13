@@ -13,10 +13,12 @@ classdef OperatingRobot <handle
         trajectory_y
         all_trajectory_x
         all_trajectory_y
+        dist_can_reach
+        position_can_reach
         trajectory_power
-        battery_life=100 % in number of timesteps
+        battery_life=50 % in number of timesteps
         charging_period_time
-        max_speed=2.2 % how to difine?
+        max_speed=0.2 % how to difine?
         power_level
         battery_drain_rate
         recharge_window_max_level
@@ -26,7 +28,7 @@ classdef OperatingRobot <handle
         scale_coef
         temp
         alert_level=.4;
-        critical_level=0.00;
+        critical_level=0.1;
         meeting_times=[];
     end
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -119,7 +121,7 @@ classdef OperatingRobot <handle
                 new_points = interp1(cumulative_dist_along_path, position_matrix, dist_steps);
                 obj.trajectory_x(trajectory_indexes_to_fill)=new_points(:,1)';
                 obj.trajectory_y(trajectory_indexes_to_fill)=new_points(:,2)';
-                trajectory_indexes_to_fill=trajectory_indexes_to_fill(end)+(1:obj.charging_period_time)
+                trajectory_indexes_to_fill=trajectory_indexes_to_fill(end)+(1:obj.charging_period_time);
                 obj.trajectory_x(trajectory_indexes_to_fill)=new_points(end,1)*ones(1,obj.charging_period_time);
                 obj.trajectory_y(trajectory_indexes_to_fill)=new_points(end,2)*ones(1,obj.charging_period_time);
             end
@@ -148,7 +150,7 @@ classdef OperatingRobot <handle
                     temp_alert=find(alert);
                     temp_alert=temp_alert(find(temp_alert<=obj.battery_life*i & temp_alert>obj.battery_life*(i-1)));
                     indeces_to_plot=temp_alert;
-                    % plot(obj.trajectory_x(indeces_to_plot),obj.trajectory_y(indeces_to_plot),'r','LineWidth',3);
+                    plot(obj.trajectory_x(indeces_to_plot),obj.trajectory_y(indeces_to_plot),'b','LineWidth',3);
                     
                     temp_critical=find(critical);
                     temp_critical=temp_critical(find(temp_critical<=obj.battery_life*i & temp_critical>obj.battery_life*(i-1)));
@@ -201,13 +203,17 @@ classdef OperatingRobot <handle
                 iter=1;
                 dist_can_reach=[];
                 position_can_reach=[];
-                while cumulative_dist_along_path(iter)-dist_steps(end) <= 0
+                while dist_steps(end)-cumulative_dist_along_path(iter)>= 0
                     dist_can_reach(iter)=cumulative_dist_along_path(iter);
                     position_can_reach(iter,:)=position_matrix(iter,:);
 
                 iter=iter+1;
             end
+            dist_can_reach=[dist_can_reach cumulative_dist_along_path(iter)];
+            position_can_reach=[position_can_reach; position_matrix(iter,:)];
             end
+         
+
             new_points = interp1(dist_can_reach, position_can_reach, dist_steps);
             obj.trajectory_x=new_points(:,1)';
             obj.trajectory_y=new_points(:,2)';
