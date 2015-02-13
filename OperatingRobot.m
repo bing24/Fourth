@@ -14,9 +14,9 @@ classdef OperatingRobot <handle
         all_trajectory_x
         all_trajectory_y
         trajectory_power
-        battery_life=10*10 % in number of timesteps
-        charging_period_time=10
-        max_speed=.1*100 % how to difine?
+        battery_life=100 % in number of timesteps
+        charging_period_time
+        max_speed=2.2 % how to difine?
         power_level
         battery_drain_rate
         recharge_window_max_level
@@ -92,9 +92,13 @@ classdef OperatingRobot <handle
             number_of_meeting_points=length(obj.meeting_times)+1;
             temp_trajectory_x=obj.trajectory_x;
             temp_trajectory_y=obj.trajectory_y;
-            stop_points=sort([1 obj.meeting_times],2);
+            stop_points=sort([0 obj.meeting_times],2);
             for i=2:number_of_meeting_points
+                if i==2
+                time_indexes=stop_points(i-1)+1:stop_points(i);
+            else
                 time_indexes=stop_points(i-1):stop_points(i);
+            end
                 position_matrix=[temp_trajectory_x(time_indexes)', temp_trajectory_y(time_indexes)'];
                 distance_between_points = diff(position_matrix,1);
                 dist_from_vertex_to_vertex = hypot(distance_between_points(:,1), distance_between_points(:,2));
@@ -109,10 +113,13 @@ classdef OperatingRobot <handle
                 temp_speed=[temp_speed speed];
                 
                 dist_steps = speed:speed:cumulative_dist_along_path(end);
+
+
+
                 new_points = interp1(cumulative_dist_along_path, position_matrix, dist_steps);
                 obj.trajectory_x(trajectory_indexes_to_fill)=new_points(:,1)';
                 obj.trajectory_y(trajectory_indexes_to_fill)=new_points(:,2)';
-                trajectory_indexes_to_fill=trajectory_indexes_to_fill(end)+(1:obj.charging_period_time);
+                trajectory_indexes_to_fill=trajectory_indexes_to_fill(end)+(1:obj.charging_period_time)
                 obj.trajectory_x(trajectory_indexes_to_fill)=new_points(end,1)*ones(1,obj.charging_period_time);
                 obj.trajectory_y(trajectory_indexes_to_fill)=new_points(end,2)*ones(1,obj.charging_period_time);
             end
@@ -141,7 +148,7 @@ classdef OperatingRobot <handle
                     temp_alert=find(alert);
                     temp_alert=temp_alert(find(temp_alert<=obj.battery_life*i & temp_alert>obj.battery_life*(i-1)));
                     indeces_to_plot=temp_alert;
-                    plot(obj.trajectory_x(indeces_to_plot),obj.trajectory_y(indeces_to_plot),'r','LineWidth',3);
+                    % plot(obj.trajectory_x(indeces_to_plot),obj.trajectory_y(indeces_to_plot),'r','LineWidth',3);
                     
                     temp_critical=find(critical);
                     temp_critical=temp_critical(find(temp_critical<=obj.battery_life*i & temp_critical>obj.battery_life*(i-1)));
@@ -186,7 +193,22 @@ classdef OperatingRobot <handle
             dist_from_vertex_to_vertex = hypot(distance_between_points(:,1), distance_between_points(:,2));
             cumulative_dist_along_path = [0; cumsum(dist_from_vertex_to_vertex,1)];
             dist_steps = 0:obj.max_speed:obj.max_speed*obj.simulation_time; %linspace(0, travel_length, number_of_timesteps);
-            new_points = interp1(cumulative_dist_along_path*10, position_matrix*10, dist_steps)/10;
+
+            if dist_steps(end)>cumulative_dist_along_path(end)
+                error('error working robot speed is too fast')
+
+            else
+                iter=1;
+                dist_can_reach=[];
+                position_can_reach=[];
+                while cumulative_dist_along_path(iter)-dist_steps(end) <= 0
+                    dist_can_reach(iter)=cumulative_dist_along_path(iter);
+                    position_can_reach(iter,:)=position_matrix(iter,:);
+
+                iter=iter+1;
+            end
+            end
+            new_points = interp1(dist_can_reach, position_can_reach, dist_steps);
             obj.trajectory_x=new_points(:,1)';
             obj.trajectory_y=new_points(:,2)';
             obj.power_level=1-mod([0:obj.simulation_time],obj.battery_life)/obj.battery_life;

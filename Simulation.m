@@ -327,10 +327,9 @@ classdef Simulation < handle
             number_of_operating_robots=length(obj.list_of_operating_robots);
             switch nargin
                 case 1
-                    close all
-                    % x=20;
-                    % axis([-x x -x x]);
-                    % axis([1 24 -2 17])
+                    % close all
+                    x=120;
+                    axis([-x x -x x]);
                     obj.FigHandle=figure(1);
                     axis equal
                     set(obj.FigHandle, 'Position', [100, 100, 1049, 895]);
@@ -355,12 +354,12 @@ classdef Simulation < handle
                     for i=1:length(obj.list_of_charging_robots);
                          obj.list_of_charging_robots(i).plot(time);
                     end
-                    % if (isempty (find(time==[1 0:70:700])));
-                    %     time;
-                    % else
+                    if (isempty (find(time==[1 0:20:200])));
+                        time;
+                    else
                         
-                    %     saveas(obj.FigHandle,sprintf('FIG%d.png',time));
-                    % end
+                        saveas(obj.FigHandle,sprintf('FIG%d.png',time));
+                    end
             end
 
         end
@@ -386,13 +385,16 @@ classdef Simulation < handle
                 end
             case 2
                 if (any(strcmp(record,{'Record','record','Rec','rec'})))
+                    
                     c=fix(clock);
                     cstr=strcat(mat2str(c),'.avi');
                     SimulationVideo = VideoWriter(cstr);
                     open(SimulationVideo);
-                    axis tight
+                    figure()
                     set(gca,'nextplot','replacechildren');
                     set(gcf,'Renderer','zbuffer');
+                    obj.plot();
+                    axis([-120,120,-120,120])
                     for i=1:obj.simulation_time
                         obj.plot(i);
                         drawnow;

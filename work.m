@@ -10,7 +10,7 @@ sim=Simulation();
 
 sim.addOperatingRobots(4);
 sim.addChargingRobots(2);
-sim.setImageScale(.005);
+sim.setImageScale(.05);
 sim.setSimulationTime(200);
 
 
@@ -65,17 +65,17 @@ sim.list_of_operating_robots(4).trajectory_y=lawn_mower(1,:)+15;
                 y_array=fitted_values.*sin(discrete_steps);
                 normalization_coef=sum(sqrt(diff(x_array).^2+diff(y_array).^2));
                 
-                whole_trajectory_x=travel_length/normalization_coef*x_array+0;
-                whole_trajectory_y=travel_length/normalization_coef*y_array+0;
+                whole_trajectory_x=travel_length/normalization_coef*x_array*100+0;
+                whole_trajectory_y=travel_length/normalization_coef*y_array*100+0;
 
-sim.list_of_operating_robots(1).trajectory_x=whole_trajectory_x(13:38);
-sim.list_of_operating_robots(2).trajectory_x=whole_trajectory_x(39:63);
-sim.list_of_operating_robots(3).trajectory_x=whole_trajectory_x(64:88);
-sim.list_of_operating_robots(4).trajectory_x=whole_trajectory_x(89:100);
-sim.list_of_operating_robots(1).trajectory_y=whole_trajectory_y(13:38);
-sim.list_of_operating_robots(2).trajectory_y=whole_trajectory_y(39:63);
-sim.list_of_operating_robots(3).trajectory_y=whole_trajectory_y(64:88);
-sim.list_of_operating_robots(4).trajectory_y=whole_trajectory_y(89:100);
+sim.list_of_operating_robots(1).trajectory_x=whole_trajectory_x(13:end-1);
+sim.list_of_operating_robots(2).trajectory_x=[whole_trajectory_x(39:end-1) whole_trajectory_x(1:38)];
+sim.list_of_operating_robots(3).trajectory_x=[whole_trajectory_x(64:end-1) whole_trajectory_x(1:63)];
+sim.list_of_operating_robots(4).trajectory_x=[whole_trajectory_x(89:end-1) whole_trajectory_x(1:88)];
+sim.list_of_operating_robots(1).trajectory_y=whole_trajectory_y(13:end-1) ;
+sim.list_of_operating_robots(2).trajectory_y=[whole_trajectory_y(39:end-1) whole_trajectory_y(1:38)];
+sim.list_of_operating_robots(3).trajectory_y=[whole_trajectory_y(64:end-1) whole_trajectory_y(1:63)];
+sim.list_of_operating_robots(4).trajectory_y=[whole_trajectory_y(89:end-1) whole_trajectory_y(1:88)];
 
 
 % close all
@@ -84,16 +84,17 @@ sim.list_of_operating_robots(4).trajectory_y=whole_trajectory_y(89:100);
 % 	setpos(sim.list_of_charging_robots(i),i*2,i*4);
 % 	setspeed(sim.list_of_charging_robots(i),10000);
 % end
-setpos(sim.list_of_charging_robots(1),-0.6,0);
-	setspeed(sim.list_of_charging_robots(1),10000);
-setpos(sim.list_of_charging_robots(2),0.6,0);
-	setspeed(sim.list_of_charging_robots(2),10000);
+setpos(sim.list_of_charging_robots(1),-0.6*100,0);
+	setspeed(sim.list_of_charging_robots(1),100);
+setpos(sim.list_of_charging_robots(2),0.6*100,0);
+	setspeed(sim.list_of_charging_robots(2),100);
 setTimeStep(sim,1);
-setChargingTime(sim,5);
+setChargingTime(sim,20);
 a=sim.list_of_operating_robots(1);
 
 plan(sim,'LKH','Distance');
 
 
 sim.plot()
+% pause (3)
 % sim.simulate()
