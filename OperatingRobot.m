@@ -16,9 +16,9 @@ classdef OperatingRobot <handle
         dist_can_reach
         position_can_reach
         trajectory_power
-        battery_life=50 % in number of timesteps
+        battery_life=125 % in number of timesteps
         charging_period_time
-        max_speed=0.2 % how to difine?
+        max_speed=2 % how to difine?
         power_level
         battery_drain_rate
         recharge_window_max_level
@@ -27,7 +27,7 @@ classdef OperatingRobot <handle
         figure_handle=[]
         scale_coef
         temp
-        alert_level=.4;
+        alert_level=.6;
         critical_level=0.1;
         meeting_times=[];
     end
@@ -106,10 +106,10 @@ classdef OperatingRobot <handle
                 dist_from_vertex_to_vertex = hypot(distance_between_points(:,1), distance_between_points(:,2));
                 cumulative_dist_along_path = [0; cumsum(dist_from_vertex_to_vertex,1)];
                 if stop_points(i-1)==0
-                    speed=cumulative_dist_along_path(end)/stop_points(2);
+                    speed=cumulative_dist_along_path(stop_points(2))/stop_points(2);
                     trajectory_indexes_to_fill=1:stop_points(2);
                 else
-                    speed=cumulative_dist_along_path(end)/(stop_points(i)-stop_points(i-1)-obj.charging_period_time);
+                    speed=cumulative_dist_along_path(stop_points(i)-stop_points(i-1))/(stop_points(i)-stop_points(i-1)-obj.charging_period_time);
                     trajectory_indexes_to_fill=(stop_points(i-1)+obj.charging_period_time+1):stop_points(i);
                 end
                 temp_speed=[temp_speed speed];
@@ -119,6 +119,8 @@ classdef OperatingRobot <handle
 
 
                 new_points = interp1(cumulative_dist_along_path, position_matrix, dist_steps);
+
+                % new_points=position_matrix;
                 obj.trajectory_x(trajectory_indexes_to_fill)=new_points(:,1)';
                 obj.trajectory_y(trajectory_indexes_to_fill)=new_points(:,2)';
                 trajectory_indexes_to_fill=trajectory_indexes_to_fill(end)+(1:obj.charging_period_time);
@@ -156,6 +158,7 @@ classdef OperatingRobot <handle
                     temp_critical=temp_critical(find(temp_critical<=obj.battery_life*i & temp_critical>obj.battery_life*(i-1)));
                     indeces_to_plot=[min(temp_critical)-1 temp_critical min(max(temp_critical)+1,obj.simulation_time)];
                     plot(obj.trajectory_x(indeces_to_plot),obj.trajectory_y(indeces_to_plot),'b','LineWidth',3); 
+                    % set(handle_of_sim,'XTickLabel',[])
 
                 end
             case 2

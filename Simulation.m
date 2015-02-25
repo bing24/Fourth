@@ -329,7 +329,7 @@ classdef Simulation < handle
                 case 1
                     % close all
                     % x=120;
-                    axis([-0 27 -6 21]);
+                       axis([-145.2409  126.7725 -125.3140  120.2255]);
                     obj.FigHandle=figure(1);
                     axis equal
                     set(obj.FigHandle, 'Position', [100, 100, 1049, 895]);
@@ -354,7 +354,7 @@ classdef Simulation < handle
                     for i=1:length(obj.list_of_charging_robots);
                          obj.list_of_charging_robots(i).plot(time);
                     end
-                    if (isempty (find(time==[1 0:obj.simulation_time/10:obj.simulation_time])));
+                    if (isempty (find(time==[1 2 0:obj.simulation_time/10:obj.simulation_time])));
                         time;
                     else
                         
@@ -394,7 +394,7 @@ classdef Simulation < handle
                     set(gca,'nextplot','replacechildren');
                     set(gcf,'Renderer','zbuffer');
                     obj.plot();
-                    axis([-0 27 -6 21]);
+                    axis([-123.9075  124.7855 -103.0364   93.1102]);
                     for i=1:obj.simulation_time
                         obj.plot(i);
                         drawnow;

@@ -84,17 +84,29 @@ classdef ChargingRobot < handle
             case 2
 
                 if ishandle(obj.figure_handle) delete(obj.figure_handle);end
-                [workerimage,~,alpha]=imread('cr.png');
+                
+
                 if time==1
                     p1=[obj.trajectory_x(time+1) obj.trajectory_y(time+1)];
+
                 else
                     p1=[obj.trajectory_x(time-1) obj.trajectory_y(time-1)];
+
                 end
                 p2=[obj.trajectory_x(time) obj.trajectory_y(time)];
+
+                if p1(1)>=p2(1)
+                    [workerimage,~,alpha]=imread('cr.png');
                 sita = atan2(p2(2)-p1(2),p2(1)-p1(1))*180/pi-15;
+                else
+                 [workerimage,~,alpha]=imread('crf.png');
+                 sita = atan2(p2(2)-p1(2),p2(1)-p1(1))*180/pi+15+180;
+                end
                 if isnan(sita)
                     sita=0;
                 end
+
+                
                 workerrotate=imrotate(workerimage,-sita);
                 alpharotate=imrotate(alpha,-sita);
                 
