@@ -329,7 +329,8 @@ classdef Simulation < handle
                 case 1
                     % close all
                     % x=120;
-                       axis([-145.2409  126.7725 -125.3140  120.2255]);
+                    axis([-0 27 -6 21]);
+                       % axis([-145.2409  126.7725 -125.3140  120.2255]); uncomment for circle
                     obj.FigHandle=figure(1);
                     axis equal
                     set(obj.FigHandle, 'Position', [100, 100, 1049, 895]);
@@ -354,12 +355,12 @@ classdef Simulation < handle
                     for i=1:length(obj.list_of_charging_robots);
                          obj.list_of_charging_robots(i).plot(time);
                     end
-                    if (isempty (find(time==[1 2 0:obj.simulation_time/10:obj.simulation_time])));
-                        time;
-                    else
+                    % if (isempty (find(time==[1 2 0:obj.simulation_time/10:obj.simulation_time])));
+                    %     time;
+                    % else
                         
-                        saveas(obj.FigHandle,sprintf('FIG%d.png',time));
-                    end
+                    %     saveas(obj.FigHandle,sprintf('FIG%d.png',time));
+                    % end
             end
 
         end
@@ -389,12 +390,14 @@ classdef Simulation < handle
                     c=fix(clock);
                     cstr=strcat(mat2str(c),'.avi');
                     SimulationVideo = VideoWriter(cstr);
+                    SimulationVideo.FrameRate = 5; % Barzin tried to slow the video 2/4/2016
                     open(SimulationVideo);
                     
                     set(gca,'nextplot','replacechildren');
                     set(gcf,'Renderer','zbuffer');
                     obj.plot();
-                    axis([-123.9075  124.7855 -103.0364   93.1102]);
+                    axis([-0 27 -6 21]);
+                    % axis([-123.9075  130.7855 -103.0364   113.1102]); uncomment for circle
                     for i=1:obj.simulation_time
                         obj.plot(i);
                         drawnow;

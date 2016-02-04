@@ -16,9 +16,9 @@ classdef OperatingRobot <handle
         dist_can_reach
         position_can_reach
         trajectory_power
-        battery_life=125 % in number of timesteps
+        battery_life=50 % in number of timesteps switch to 50 for circle
         charging_period_time
-        max_speed=2 % how to difine?
+        max_speed=.2 % how to difine? switch to 2 for the circle scenario
         power_level
         battery_drain_rate
         recharge_window_max_level
@@ -27,7 +27,7 @@ classdef OperatingRobot <handle
         figure_handle=[]
         scale_coef
         temp
-        alert_level=.6;
+        alert_level=.4;
         critical_level=0.1;
         meeting_times=[];
     end
